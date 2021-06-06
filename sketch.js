@@ -7,13 +7,14 @@ let theta = 0;
 function preload(){
   img = loadImage('assets/instagram.jpg');
   ost = loadSound('assets/music.mp3');
+  ost.playMode('restart');
+  spinMusic = loadSound('assets/spinnigMusic.mp3');
 }
 
 function setup() {
   createCanvas(600, 600);
   noFill();
   noStroke();
-  img.loadPixels();
   getArray();
 }
 
@@ -34,14 +35,24 @@ function draw() {
       theta += 0.00001;
     }
     if (mouseIsPressed & dist(mouseX, mouseY, width/2, height/2) < 70) {
+      if (!spinMusic._playing){
+        spinMusic.play();
+      }
+
       theta *= 1.01;
-      if (theta > 50){
+      
+      if (theta > 40){
+        spinMusic.stop();
         spinnig = !spinnig
-        ost.play();
         createInputs();
       }
+    }else{
+      spinMusic.pause();
     }
   }else{
+    if (!ost._playing){
+      ost.play();
+    }
     translate(int(width/2 - (15*img.width/2)), int(height/2  - (15*img.height/2)));
     for (let i = 0; i < circlesArray.length; i++) {
       circlesArray[i].move();
@@ -84,6 +95,7 @@ function fetchImage() {
 }
 
 function resetImage() {
+  ost.play();
   for (let i = 0; i < circlesArray.length; i++) {
     circlesArray[i].col[3] = 255;
     circlesArray[i].xGo = circlesArray[i].xOrigin;
@@ -96,6 +108,7 @@ function resetImage() {
 
 
 function getArray(){
+  img.loadPixels();
   img.resize(25,25);
   for (let y = 0; y < img.width; y++) {
     for (let x = 0; x < img.height; x++) {
